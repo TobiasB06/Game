@@ -360,7 +360,7 @@ class GameScene(Scene):
         # 3) NUEVO: Guardar estado completo del jugador en el historial
         if self.state_manager.can_move_player():
             # Por defecto, tomamos datos actuales
-            pos_to_store = self.player.pos.copy()
+            pos_to_store = self.player.rect.center
             dir_to_store = self.player.direction
             frame_to_store = self.player.frame_index
             is_moving= self.player.is_actually_moving
@@ -375,21 +375,18 @@ class GameScene(Scene):
 
             if (player_data)["moving"] != 0:
                 self.player_history.append(player_data)
-            if (player_data)["moving"] == 0  and len(self.player_history) > 20:
-                self.player_history[-20]["frame_index"] = 0
-                self.player_history[-20]["moving"] = False
-                self.player_history[-20]["direction"] = pygame.Vector2()
+            if (player_data)["moving"] == 0  and len(self.player_history) > 10:
+                self.player_history[-10]["frame_index"] = 0
             if len(self.player_history) > 500:
                 self.player_history.pop(0)
 
         # 4) NUEVO: Actualizar followers con datos exactos del historial
-        if self.followers and len(self.player_history) > 20:
+        if self.followers and len(self.player_history) > 10:
             for idx, follower in enumerate(self.followers, start=1):
-                if len(self.player_history):
-                    hist_idx = len(self.player_history) - 20
+                hist_idx = len(self.player_history) - 10 * (idx + 1)
+                if hist_idx >= 0:
                     past_player_data = self.player_history[hist_idx]
-           
-                    follower.follow_player_exact(past_player_data,dt)
+                    follower.follow_player_exact(past_player_data, dt)
 
 
         # 5) Resto del código igual...
@@ -405,49 +402,44 @@ class GameScene(Scene):
                         
     def draw(self, surface):
         """Renderiza la escena"""
-        try:
-            # Renderizar mundo
-            if hasattr(self, 'player'):
-                self.render_system.render_world(
-                    surface, 
-                    self.world_manager.all_sprites, 
-                    self.player.rect.center
-                )
-            else:
-                # Si no hay jugador, renderizar desde el centro
-                self.render_system.render_world(
-                    surface, 
-                    self.world_manager.all_sprites, 
-                    (self.game.INT_W // 2, self.game.INT_H // 2)
-                )
-            mapa_actual = getattr(self.world_manager.current_map, 'map_path', '???')
-            nombre_mapa = self.game.font.render(f"MAPA: {mapa_actual}", True, (255, 255, 0))
-            surface.blit(nombre_mapa, (10, 10))
-            # Elementos de debug visual
-            if hasattr(self, 'player'):
-                self.render_system.render_debug_visuals(
-                    surface,
-                    self.debug_menu,
-                    self.world_manager.collision_sprites,
-                    self.world_manager.interactable_sprites,
-                    self.player.rect
-                )
-            
-            # UI
-            self.inventory_ui.draw(surface)
-            if hasattr(self, 'dialog_manager'):
-                self.dialog_manager.draw(surface)
-            self.debug_menu.draw(surface)
-            
-            # Transiciones
-            if self.world_manager.is_transitioning():
-                self.world_manager.fade.draw(surface)
+
+        # Renderizar mundo
+        if hasattr(self, 'player'):
+            self.render_system.render_world(
+                surface, 
+                self.world_manager.all_sprites, 
+                self.player.rect.center
+            )
+        else:
+            # Si no hay jugador, renderizar desde el centro
+            self.render_system.render_world(
+                surface, 
+                self.world_manager.all_sprites, 
+                (self.game.INT_W // 2, self.game.INT_H // 2)
+            )
+        mapa_actual = getattr(self.world_manager.current_map, 'map_path', '???')
+        nombre_mapa = self.game.font.render(f"MAPA: {mapa_actual}", True, (255, 255, 0))
+        surface.blit(nombre_mapa, (10, 10))
+        # Elementos de debug visual
+        if hasattr(self, 'player'):
+            self.render_system.render_debug_visuals(
+                surface,
+                self.debug_menu,
+                self.world_manager.collision_sprites,
+                self.world_manager.interactable_sprites,
+                self.player.rect
+            )
         
-        except Exception as e:
-            logger.error(f"Error drawing GameScene: {e}")
-            # Dibujar un mensaje de error
-            error_surf = self.game.font.render("Render Error", True, (255, 0, 0))
-            surface.blit(error_surf, (10, 10))
+        # UI
+        self.inventory_ui.draw(surface)
+        if hasattr(self, 'dialog_manager'):
+            self.dialog_manager.draw(surface)
+        self.debug_menu.draw(surface)
+        
+        # Transiciones
+        if self.world_manager.is_transitioning():
+            self.world_manager.fade.draw(surface)
+        
     
     def cleanup(self):
         """Limpia recursos de la escena"""

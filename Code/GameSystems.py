@@ -67,7 +67,7 @@ class GameStateManager:
         return self.current_state not in blocked_states
 
 class RenderSystem:
-    """Sistema de renderizado separado"""
+    """Sistema de renderizado separado mejorado sin temblequeo"""
     
     def __init__(self, screen_width: int, screen_height: int):
         self.screen_width = screen_width
@@ -75,38 +75,50 @@ class RenderSystem:
         self.camera_offset = pygame.Vector2(0, 0)
     
     def calculate_camera_offset(self, target_pos: tuple):
-        """Calcula el offset de la cámara basado en la posición objetivo"""
-        self.camera_offset.x = -(target_pos[0] - self.screen_width // 2)
-        self.camera_offset.y = -(target_pos[1] - self.screen_height // 2)
+        """Calcula el offset de la cámara con redondeo para evitar sub-píxeles"""
+        # CLAVE: Redondear inmediatamente para evitar coordenadas fraccionarias
+        self.camera_offset.x = round(-(target_pos[0] - self.screen_width // 2))
+        self.camera_offset.y = round(-(target_pos[1] - self.screen_height // 2))
     
-    def render_world(self, surface: pygame.Surface, all_sprites: AllSprites, player_pos: tuple):
-        """Renderiza el mundo del juego"""
+    def render_world(self, surface: pygame.Surface, all_sprites, player_pos: tuple):
+        """Renderiza el mundo del juego sin temblequeo"""
         surface.fill((50, 50, 50))
-        self.calculate_camera_offset(player_pos)
-        all_sprites.draw(surface, player_pos)
+        
+        # Asegurar que player_pos tenga coordenadas enteras para la cámara
+        rounded_player_pos = (round(player_pos[0]), round(player_pos[1]))
+        
+        # El AllSprites.draw ya maneja el redondeo internamente
+        all_sprites.draw(surface, rounded_player_pos)
     
-    def render_debug_visuals(self, surface: pygame.Surface, debug_menu: 'DebugMenu', 
+    def render_debug_visuals(self, surface: pygame.Surface, debug_menu, 
                            collision_sprites, interactable_sprites, player_rect):
-        """Renderiza elementos de debug visual"""
+        """Renderiza elementos de debug visual con posiciones enteras"""
         if not debug_menu.visible:
             return
+        
+        # Obtener offset de cámara redondeado del AllSprites
+        if hasattr(debug_menu.game_scene.world_manager, 'all_sprites'):
+            camera_offset = debug_menu.game_scene.world_manager.all_sprites.get_camera_offset()
+        else:
+            self.calculate_camera_offset(player_rect.center)
+            camera_offset = (int(self.camera_offset.x), int(self.camera_offset.y))
         
         # Hitboxes de colisión
         if debug_menu.show_hitboxes:
             for sprite in collision_sprites:
-                screen_rect = sprite.rect.move(self.camera_offset)
+                screen_rect = sprite.rect.move(camera_offset)
                 pygame.draw.rect(surface, (255, 0, 0), screen_rect, 1)
         
         # Zonas de interacción
         if debug_menu.show_interaction_zones:
             for zone in interactable_sprites:
-                screen_rect = zone.rect.move(self.camera_offset)
+                screen_rect = zone.rect.move(camera_offset)
                 pygame.draw.rect(surface, (0, 255, 0), screen_rect, 1)
         
         # Rect de interacción del jugador
         if hasattr(debug_menu.game_scene, 'player'):
             interaction_rect = debug_menu.game_scene.player.get_interaction_rect()
-            screen_rect = interaction_rect.move(self.camera_offset)
+            screen_rect = interaction_rect.move(camera_offset)
             pygame.draw.rect(surface, (255, 255, 0), screen_rect, 1)
 
 class PartyManager:

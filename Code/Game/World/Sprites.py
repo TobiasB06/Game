@@ -78,7 +78,7 @@ class Follower(pygame.sprite.Sprite):
         dir_hist = player_data['direction']
 
         if dir_hist.x != 0 or dir_hist.y != 0:
-            speed = 100
+            speed = 200
             direction = (target - self.pos)
             distance = direction.length()
             if distance > 0:
@@ -89,16 +89,15 @@ class Follower(pygame.sprite.Sprite):
                 else:
                     self.pos += move
 
-            self.rect.center = (round(self.pos.x), round(self.pos.y))
+            self.rect.center = self.pos.xy
 
-        if player_data["moving"]:
-            self.current_state = player_data['state']
-            raw = int(player_data['frame_index'])
-            self.frame_index = raw % len(self.frames[self.current_state])
-            self.image = self.frames[self.current_state][self.frame_index]
-        else:
-            self.frame_index = 0
-            self.image = self.frames[self.current_state][0]
+        # Animación
+        self.current_state = player_data['state']
+        raw = int(player_data['frame_index'])
+        self.frame_index = raw % len(self.frames[self.current_state])
+        self.image = self.frames[self.current_state][self.frame_index]
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
+
     def teleport_to(self, position):
         """Teletransporta el follower instantáneamente"""
         self.pos = pygame.Vector2(position)

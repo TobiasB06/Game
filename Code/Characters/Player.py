@@ -26,7 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.last_pos = pygame.math.Vector2(pos)
         self.is_actually_moving = False
         self.movement_changed = False
-        
+        self.input_history = []  # Lista de estados de teclas
+        self.input_frame_counter = 0
     def _init_player_properties(self, pos):
         self.state = "down"
         self.image = self.frames[self.state][0]
@@ -34,7 +35,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(pos)
         self.hitbox_rect = pygame.Rect(self.pos.x, self.pos.y + 18, 15, 15)
         self.rect = self.image.get_rect(midbottom=self.hitbox_rect.midbottom)
-        self.speed = 50
+        self.speed = 60
         self.sprite_speed = 3
         
     def load_frames(self):
@@ -72,11 +73,42 @@ class Player(pygame.sprite.Sprite):
             interaction_pos.y - h//2,
             w, h
         )
-
+    def get_input_at_frame(self, target_frame):
+        """Obtiene el estado de input en un frame específico"""
+        for input_state in reversed(self.input_history):
+            if input_state['frame'] <= target_frame:
+                return input_state['keys']
+        
+        # Si no encontramos el frame exacto, devolver sin teclas presionadas
+        return {'left': False, 'right': False, 'up': False, 'down': False}
+    
     def input(self, events):
+        """Captura input y lo guarda en el historial"""
         keys = pygame.key.get_pressed()
+        
+        # NUEVO: Guardar estado de teclas de movimiento
+        input_state = {
+            'frame': self.input_frame_counter,
+            'keys': {
+                'left': keys[pygame.K_LEFT],
+                'right': keys[pygame.K_RIGHT],
+                'up': keys[pygame.K_UP],
+                'down': keys[pygame.K_DOWN]
+            }
+        }
+        
+        self.input_history.append(input_state)
+        
+        # Limitar historial (5 segundos a 60 FPS = 300 frames)
+        if len(self.input_history) > 300:
+            self.input_history.pop(0)
+        
+        self.input_frame_counter += 1
+        
+        # Procesar movimiento normalmente
         self.move_player(keys)
 
+        # Resto del input (interacciones, etc.)
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
@@ -115,25 +147,30 @@ class Player(pygame.sprite.Sprite):
             self.dialog_manager.current_index = 0
             
     def move(self, dt):
-        # NUEVO: Guardar posición anterior
+        """Movimiento con actualización correcta de rectángulos"""
+        # Guardar posición anterior
         self.last_pos = self.pos.copy()
         
         # Movimiento horizontal
         self.pos.x += self.direction.x * self.speed * dt
-        self.hitbox_rect.centerx = self.pos.x
+        self.hitbox_rect.centerx = round(self.pos.x)  # NUEVO: Redondear
         self.collision("horizontal")
 
         # Movimiento vertical
         self.pos.y += self.direction.y * self.speed * dt
-        self.hitbox_rect.bottom = self.pos.y + 18
+        self.hitbox_rect.bottom = round(self.pos.y + 18)  # NUEVO: Redondear
         self.collision("vertical")
 
-        # Actualiza la posición del rect del sprite
+        # Actualiza la posición del rect del sprite con coordenadas enteras
         self.rect.midbottom = self.hitbox_rect.midbottom
         
-        # NUEVO: Calcular si realmente se movió
+        # Sincronizar pos con hitbox_rect para mantener consistencia
+        self.pos.x = self.hitbox_rect.centerx
+        self.pos.y = self.hitbox_rect.bottom - 18
+        
+        # Calcular si realmente se movió
         movement_distance = (self.pos - self.last_pos).length()
-        self.is_actually_moving = movement_distance > 0.5  # Threshold muy pequeño
+        self.is_actually_moving = movement_distance > 0.1
 
     def collision(self, direction):
         for sprite in self.collision_sprites:
@@ -167,19 +204,6 @@ class Player(pygame.sprite.Sprite):
             self.frame_index = 0
             
         self.image = self.frames[self.state][int(self.frame_index)]
-
-    def get_movement_info(self):
-        """
-        NUEVO: Retorna información completa de movimiento para los followers
-        """
-        return {
-            'position': self.rect.center,
-            'state': self.state,
-            'is_moving': self.is_actually_moving,
-            'frame_index': self.frame_index,
-            'direction': self.direction.copy(),
-            'movement_changed': self.movement_changed
-        }
 
     def update(self, dt):
         self.move(dt)
