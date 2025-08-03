@@ -1,0 +1,108 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Pasillo_colegio.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
+    "fileStates": {
+        "Aula-1.tmx": {
+            "expandedObjectLayers": [
+                6,
+                9
+            ],
+            "scale": 4,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 240,
+                "y": 160.125
+            }
+        },
+        "Aula.tmx": {
+            "scale": 1.655078125,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 276.7240972386122,
+                "y": 255.8791597828652
+            }
+        },
+        "C:/Users/Tobias/OneDrive/Escritorio/Programacion/Game/Code/Maps/Tiles-tiled/Tiles-Aula.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Tobias/OneDrive/Escritorio/Programacion/game antg/code/5games-main/Vampire survivor/data/maps/world.tmx": {
+            "scale": 0.2648125,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 1553.9296672173707,
+                "y": 1599.2447486429076
+            }
+        },
+        "C:/Users/Tobias/OneDrive/Escritorio/Programacion/game antg/code/5games-main/Vampire survivor/data/tilesets/Objects.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/Tobias/OneDrive/Escritorio/Programacion/game antg/code/5games-main/Vampire survivor/data/tilesets/world_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "Objects.tsx": {
+            "scaleInDock": 1
+        },
+        "Pasillo_colegio.tmx": {
+            "expandedObjectLayers": [
+                6,
+                7
+            ],
+            "scale": 2,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 515.25,
+                "y": 240.5
+            }
+        },
+        "Sala_comp.tmx": {
+            "scale": 1.7503030303030302,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 259.9549861495845,
+                "y": 159.1153047091413
+            }
+        },
+        "Tiles-Aula.tsx": {
+            "scaleInDock": 1
+        },
+        "faxs.tmx": {
+            "scale": 1.9811458333333332,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 240.01261895998738,
+                "y": 160.00841263999158
+            }
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/Tobias/OneDrive/Escritorio/Programacion/Game/Code/Maps/Aula",
+    "last.imagePath": "C:/Users/Tobias/OneDrive/Escritorio/Programacion/Game/Code/Maps/Objects",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+        "Aula.tmx",
+        "Pasillo_colegio.tmx",
+        "Aula-1.tmx",
+        "Sala_comp.tmx",
+        "C:/Users/Tobias/OneDrive/Escritorio/Programacion/game antg/code/5games-main/Vampire survivor/data/maps/world.tmx"
+    ],
+    "project": "Aula.tiled-project",
+    "property.type": "file",
+    "recentFiles": [
+        "Aula.tmx",
+        "C:/Users/Tobias/OneDrive/Escritorio/Programacion/game antg/code/5games-main/Vampire survivor/data/maps/world.tmx",
+        "Sala_comp.tmx",
+        "Aula-1.tmx",
+        "Pasillo_colegio.tmx",
+        "faxs.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.type": 1
+}
