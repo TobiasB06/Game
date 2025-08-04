@@ -103,26 +103,26 @@ class RenderSystem:
             self.calculate_camera_offset(player_rect.center)
             camera_offset = (int(self.camera_offset.x), int(self.camera_offset.y))
         
-        # Hitboxes de colisión
+        # Hitboxes de colision
         if debug_menu.show_hitboxes:
             for sprite in collision_sprites:
                 screen_rect = sprite.rect.move(camera_offset)
                 pygame.draw.rect(surface, (255, 0, 0), screen_rect, 1)
         
-        # Zonas de interacción
+        # Zonas de interaccion
         if debug_menu.show_interaction_zones:
             for zone in interactable_sprites:
                 screen_rect = zone.rect.move(camera_offset)
                 pygame.draw.rect(surface, (0, 255, 0), screen_rect, 1)
         
-        # Rect de interacción del jugador
+        # Rect de interaccion del jugador
         if hasattr(debug_menu.game_scene, 'player'):
             interaction_rect = debug_menu.game_scene.player.get_interaction_rect()
             screen_rect = interaction_rect.move(camera_offset)
             pygame.draw.rect(surface, (255, 255, 0), screen_rect, 1)
 
 class PartyManager:
-    """Gestiona el sistema de grupo/party"""
+    """Gestiona el sistema de partys"""
     
     def __init__(self):
         self.characters: List[Character] = []
@@ -131,7 +131,7 @@ class PartyManager:
     
     def _setup_main_character(self):
         """Configura el personaje principal (Ely)"""
-        ely = Character()
+        ely = Character(attack=4,defense=7,max_hp=100,will=4)
         ely.sprite_key = "Ely"
         
         # Pre-cargar sprite preview de Ely
@@ -162,13 +162,15 @@ class PartyManager:
         member_configs = {
             "koral": {
                 "sprite_key": "Koral",
-                "items": [5, 6],  # Bastón mágico, Túnica
-                "color": (100, 150, 255)
+                "items": [5, 6], 
+                "color": (100, 150, 255),
+                "stats": [6,4,130,2]
             },
             "vel": {
                 "sprite_key": "Vel", 
-                "items": [7, 8],  # Daga, Capa
-                "color": (255, 100, 150)
+                "items": [7, 8], 
+                "color": (255, 100, 150),
+                "stats": [2,5,90,6]
             }
         }
         
@@ -177,14 +179,15 @@ class PartyManager:
             logger.warning(f"Unknown party member: {member_name}")
             return False
         
-        # Verificar si ya está en el grupo
+        # Verificar si ya esta en el grupo
         for char in self.characters:
             if getattr(char, 'sprite_key', '') == config['sprite_key']:
                 logger.info(f"{member_name} already in party")
                 return False
         
-        # Crear nuevo personaje
-        new_char = Character()
+        char_stats = config["stats"]
+        
+        new_char = Character(attack=char_stats[0],defense=char_stats[1],max_hp=char_stats[2],will=char_stats[3])
         new_char.sprite_key = config['sprite_key']
         
         # Configurar sprite
@@ -218,18 +221,18 @@ class PartyManager:
             return None
         
         removed_char = self.characters.pop(index)
-        # También remover del objeto Party si es necesario
+        # Tambien remover del objeto Party si es necesario
         logger.info(f"Character removed from party at index {index}")
         return removed_char
     
-    def heal_all(self):
+    def heal_all(self,amount:int):
         """Cura a todos los miembros del grupo"""
         for char in self.characters:
-            char.current_hp = char.get_max_hp()
+            char.current_hp = char.heal(amount)
             char.hp_color = char._calculate_hp_color()
-        logger.debug("All party members healed")
+        logger.debug(f"All party members healed {amount} HP ")
     
-    def damage_all(self, amount: int = 30):
+    def damage_all(self, amount: int):
         """Daña a todos los miembros del grupo"""
         for char in self.characters:
             char.take_damage(amount)
@@ -287,7 +290,7 @@ class WorldManager:
         self.npc_sprites.empty()
     
     def start_transition(self, new_map_path: str, callback=None):
-        """Inicia una transición a un nuevo mapa"""
+        """Inicia una transicion a un nuevo mapa"""
         self.next_map_path = new_map_path
         
         # Pre-cargar el siguiente mapa
@@ -313,7 +316,7 @@ class WorldManager:
             logger.error(f"Error pre-loading map for transition: {e}")
     
     def _finish_transition(self):
-        """Completa la transición de mapa"""
+        """Completa la transicion de mapa"""
         if self.next_map_obj:
             # Limpiar mapa actual
             self._clear_sprites()
@@ -326,14 +329,14 @@ class WorldManager:
             self.interactable_sprites = self.current_map.interactable_group
             self.collision_sprites = self.current_map.collision_group
             
-            # Limpiar variables de transición
+            # Limpiar variables de transicion
             self.next_map_obj = None
             self.next_map_path = None
             
             logger.info("Map transition completed")
     
     def get_start_position(self) -> tuple:
-        """Obtiene la posición de inicio del mapa actual"""
+        """Obtiene la posicion de inicio del mapa actual"""
         if self.current_map:
             return self.current_map.return_start_point()
         return (0, 0)
@@ -343,5 +346,5 @@ class WorldManager:
         if self.fade.active:
             self.fade.update(dt)    
     def is_transitioning(self) -> bool:
-        """Verifica si hay una transición activa"""
+        """Verifica si hay una transicion activa"""
         return self.fade.active

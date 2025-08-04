@@ -22,7 +22,7 @@ class SpriteSheet:
         return [self.get_frame(col, row) for col in range(self.columns)]
 
 class ResourceManager:
-    """Singleton para gestión centralizada de recursos del juego"""
+    """Singleton para gestion centralizada de recursos del juego"""
     
     _instance = None
     _initialized = False
@@ -43,7 +43,7 @@ class ResourceManager:
     
     @classmethod
     def get_instance(cls):
-        """Método alternativo para obtener la instancia"""
+        """Metodo alternativo para obtener la instancia"""
         return cls()
     
     def preload_all_resources(self, base_dir: Path):
@@ -158,7 +158,7 @@ class ResourceManager:
         logger.info("Resources cleaned up")
     
     def get_memory_usage(self) -> Dict[str, int]:
-        """Obtiene información sobre el uso de memoria"""
+        """Obtiene informacion sobre el uso de memoria"""
         return {
             "sprite_sheets": len(self._sprite_sheets),
             "images": len(self._images),
@@ -166,5 +166,5 @@ class ResourceManager:
             "fonts": len(self._fonts),
         }
 
-# Instancia global para compatibilidad con código existente
+# Instancia global para compatibilidad con codigo existente
 resource_manager = ResourceManager()

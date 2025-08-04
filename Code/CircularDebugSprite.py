@@ -21,7 +21,7 @@ class CircularDebugSprite(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, color, (radius, radius), radius)
         pygame.draw.circle(self.image, (255, 255, 255), (radius, radius), radius, 2)  # Borde blanco
         
-        # Posición
+        # Posicion
         self.rect = self.image.get_rect()
         self.pos = pygame.Vector2(0, 0)
         
@@ -30,7 +30,7 @@ class CircularDebugSprite(pygame.sprite.Sprite):
         self.max_trail_length = 20
         
     def set_position(self, x, y):
-        """Actualiza la posición del círculo"""
+        """Actualiza la posicion del círculo"""
         self.pos.x = x
         self.pos.y = y
         self.rect.center = (int(x), int(y))
@@ -41,12 +41,12 @@ class CircularDebugSprite(pygame.sprite.Sprite):
             self.trail_points.pop(0)
     
     def teleport_to(self, position):
-        """Teletransporta el círculo a una posición específica"""
+        """Teletransporta el círculo a una posicion específica"""
         self.set_position(position[0], position[1])
         self.trail_points.clear()  # Limpiar trail al teletransportar
     
     def draw_trail(self, surface, camera_offset):
-        """Dibuja el rastro del movimiento (útil para debug)"""
+        """Dibuja el rastro del movimiento (util para debug)"""
         if len(self.trail_points) < 2:
             return
             
@@ -54,7 +54,7 @@ class CircularDebugSprite(pygame.sprite.Sprite):
             start_pos = self.trail_points[i-1] + camera_offset
             end_pos = self.trail_points[i] + camera_offset
             
-            # Alpha basado en la posición en el trail (más reciente = más opaco)
+            # Alpha basado en la posicion en el trail (más reciente = más opaco)
             alpha = int(255 * (i / len(self.trail_points)))
             color = (*self.color, alpha)
             
@@ -109,7 +109,7 @@ class MovingCircle(CircularDebugSprite):
 
 class FollowerDebugCircle(CircularDebugSprite):
     """
-    Círculo que sigue al jugador usando la misma lógica que el Follower
+    Círculo que sigue al jugador usando la misma logica que el Follower
     """
     
     def __init__(self, target_sprite, delay_frames=20, *groups):
@@ -122,7 +122,7 @@ class FollowerDebugCircle(CircularDebugSprite):
         # Historial de posiciones del objetivo
         self.target_history = []
         
-        # Posición inicial igual al target
+        # Posicion inicial igual al target
         if hasattr(target_sprite, 'rect'):
             start_pos = target_sprite.rect.center
             self.set_position(start_pos[0], start_pos[1])
@@ -132,7 +132,7 @@ class FollowerDebugCircle(CircularDebugSprite):
         if not self.target_sprite:
             return
             
-        # Agregar posición actual del target al historial
+        # Agregar posicion actual del target al historial
         if hasattr(self.target_sprite, 'rect'):
             current_target_pos = pygame.Vector2(self.target_sprite.rect.center)
             self.target_history.append(current_target_pos)
@@ -141,11 +141,11 @@ class FollowerDebugCircle(CircularDebugSprite):
             if len(self.target_history) > self.delay_frames + 5:
                 self.target_history.pop(0)
             
-            # Seguir la posición con delay
+            # Seguir la posicion con delay
             if len(self.target_history) >= self.delay_frames:
                 delayed_pos = self.target_history[-self.delay_frames]
                 
-                # Movimiento suave hacia la posición objetivo
+                # Movimiento suave hacia la posicion objetivo
                 current_pos = pygame.Vector2(self.pos)
                 target_pos = delayed_pos
                 
@@ -170,7 +170,7 @@ class FollowerDebugCircle(CircularDebugSprite):
 
 class DebugCircleManager:
     """
-    Manager para controlar múltiples círculos de debug
+    Manager para controlar multiples círculos de debug
     """
     
     def __init__(self, game_scene):
@@ -205,7 +205,7 @@ class DebugCircleManager:
         self.show_trails = not self.show_trails
     
     def draw_debug_info(self, surface, camera_offset):
-        """Dibuja información de debug adicional"""
+        """Dibuja informacion de debug adicional"""
         if not self.show_trails:
             return
             
@@ -214,7 +214,7 @@ class DebugCircleManager:
             if hasattr(circle, 'draw_trail'):
                 circle.draw_trail(surface, camera_offset)
         
-        # Información de debug en pantalla
+        # Informacion de debug en pantalla
         font = pygame.font.Font(None, 16)
         info_text = f"Debug Circles: {len(self.circles)} | Trails: {'ON' if self.show_trails else 'OFF'}"
         text_surf = font.render(info_text, True, (255, 255, 255))
@@ -223,12 +223,12 @@ class DebugCircleManager:
 # Funciones de utilidad para integrar en el DebugMenu existente
 def add_debug_circles_to_debug_menu(debug_menu):
     """
-    Añade opciones de círculos de debug al menú existente
+    Añade opciones de círculos de debug al menu existente
     """
     if not hasattr(debug_menu.game_scene, 'circle_manager'):
         debug_menu.game_scene.circle_manager = DebugCircleManager(debug_menu.game_scene)
     
-    # Añadir nuevas opciones al menú de debug visual
+    # Añadir nuevas opciones al menu de debug visual
     new_visual_options = [
         ("Add Moving Circle", lambda: debug_menu.game_scene.circle_manager.add_moving_circle("circular", 30)),
         ("Add Follower Circle", lambda: debug_menu._add_follower_circle()),
@@ -238,7 +238,7 @@ def add_debug_circles_to_debug_menu(debug_menu):
     
     debug_menu.menu_options[debug_menu.current_category] = new_visual_options
 
-# Método helper para añadir al DebugMenu
+# Metodo helper para añadir al DebugMenu
 def _add_follower_circle_to_debug_menu(debug_menu):
     """Añade un círculo follower que sigue al jugador"""
     if hasattr(debug_menu.game_scene, 'player') and hasattr(debug_menu.game_scene, 'circle_manager'):
@@ -248,14 +248,14 @@ def _add_follower_circle_to_debug_menu(debug_menu):
         )
         print("[DEBUG] Follower circle added")
 
-# Ejemplo de integración en GameScene
+# Ejemplo de integracion en GameScene
 """
-Para usar estos círculos de debug en tu GameScene, añade esto en el método _init_ui():
+Para usar estos círculos de debug en tu GameScene, añade esto en el metodo _init_ui():
 
 # Inicializar manager de círculos de debug
 self.circle_manager = DebugCircleManager(self)
 
-Y en el método draw(), después del renderizado del mundo:
+Y en el metodo draw(), despues del renderizado del mundo:
 
 # Debug circles
 if hasattr(self, 'circle_manager'):

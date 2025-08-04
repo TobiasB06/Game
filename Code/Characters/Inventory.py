@@ -152,12 +152,12 @@ class InventoryModel:
         character.inventory.remove(item)
 
 class Character:
-    def __init__(self):
+    def __init__(self,attack,defense,max_hp,will):
         self.inventory = Inventory()
         self.equipment = Equipment()
         self.sprite_key = None
-        self.base_stats = {"attack": 5, "defense": 5, "max_hp": 120, "hp": 100}
-        self.current_hp = 100  # vida actual independiente de los stats
+        self.base_stats = {"attack": attack, "defense": defense, "max_hp": max_hp, "hp": max_hp, "will": will}
+        self.current_hp = max_hp # vida actual independiente de los stats
         self.hp_color = self._calculate_hp_color()  # color actual de la barra de vida
 
     def _calculate_hp_color(self):
@@ -188,7 +188,7 @@ class Character:
         self.current_hp = max(0, min(self.current_hp + value, self.get_max_hp()))
         self.hp_color = self._calculate_hp_color()
 
-    def set_hp(self, value):  # por si querés setear directo
+    def set_hp(self, value):  # por si queres setear directo
         self.current_hp = max(0, min(value, self.get_max_hp()))
         self.hp_color = self._calculate_hp_color()
         

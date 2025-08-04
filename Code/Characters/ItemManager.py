@@ -11,23 +11,23 @@ class ItemManager:
     def _initialize_items(self):
         """Inicializa todos los items del juego"""
         # Armas
-        self.register_item(Item(1, "Espada maestra", "weapon", {"attack": 3}))
-        self.register_item(Item(5, "Bastón mágico", "weapon", {"attack": 2}))
+        self.register_item(Item(1, "Espada maestra", "weapon", {"attack": 0}))
+        self.register_item(Item(5, "Baston magico", "weapon", {"attack": 0}))
         self.register_item(Item(7, "Daga", "weapon", {"attack": 1}))
         self.register_item(Item(9, "Espada legendaria", "weapon", {"attack": 5}))
         
         # Armaduras
         self.register_item(Item(2, "Armadura berserker", "armor", {"defense": 2}))
-        self.register_item(Item(3, "Armadura Holográfica", "armor", {"defense": 3}))
-        self.register_item(Item(4, "Armadura de papel", "armor", {"defense": 1}))
-        self.register_item(Item(6, "Túnica", "armor", {"defense": 1}))
+        self.register_item(Item(3, "Armadura Holografica", "armor", {"defense": 3}))
+        self.register_item(Item(4, "Armadura N.E.O", "armor", {"defense": 1}))
+        self.register_item(Item(6, "Tunica", "armor", {"defense": 1}))
         self.register_item(Item(8, "Capa", "armor", {"defense": 1}))
         self.register_item(Item(10, "Armadura divina", "armor", {"defense": 4}))
         
         # Consumibles (para futuro uso)
-        self.register_item(Item(11, "Poción de vida", "consumable", {"hp": 50}))
-        self.register_item(Item(12, "Poción de maná", "consumable", {"mp": 30}))
-    
+        self.register_item(Item(11, "Galleta de chocolate", "consumable", {"hp": 50}))
+        self.register_item(Item(12, "Modulo de voluntad", "consumable", {"mp": 30}))
+
     def register_item(self, item: Item):
         """Registra un item en el manager"""
         self._items[item.id] = item

@@ -27,7 +27,7 @@ class DebugMenu:
         self.noclip_mode = False
         self.god_mode = False
         
-        # Configuración de menú
+        # Configuracion de menu
         self.menu_width = 280
         self.menu_height = 200
         self.menu_x = 20
@@ -121,7 +121,7 @@ class DebugMenu:
         self.update_dynamic_options()
 
     def update_dynamic_options(self):
-        """Actualiza opciones que cambian según el estado"""
+        """Actualiza opciones que cambian segun el estado"""
         if self.current_category == DebugCategory.VISUALS:
             self.menu_options[DebugCategory.VISUALS][0] = (
                 f"Hitboxes: {'ON' if self.show_hitboxes else 'OFF'}", 
@@ -256,7 +256,7 @@ class DebugMenu:
 
     def toggle_interaction_zones(self):
         self.show_interaction_zones = not self.show_interaction_zones
-        print(f"[DEBUG] Zonas de interacción: {'ON' if self.show_interaction_zones else 'OFF'}")
+        print(f"[DEBUG] Zonas de interaccion: {'ON' if self.show_interaction_zones else 'OFF'}")
 
     def show_party_info(self):
         print("\n=== PARTY INFO ===")
@@ -283,8 +283,8 @@ class DebugMenu:
         print("=================")
 
     def toggle_sprites_outline(self):
-        # Esta función se implementaría en el sistema de render
-        print("[DEBUG] Outline de sprites (no implementado aún)")
+        # Esta funcion se implementaría en el sistema de render
+        print("[DEBUG] Outline de sprites (no implementado aun)")
 
     # === FUNCIONES DE PLAYER ===
     def toggle_noclip(self):
@@ -338,7 +338,7 @@ class DebugMenu:
         if not self.visible:
             return
 
-        # Fondo del menú
+        # Fondo del menu
         menu_rect = pygame.Rect(self.menu_x, self.menu_y, self.menu_width, self.menu_height)
         pygame.draw.rect(surface, (20, 20, 20), menu_rect)
         pygame.draw.rect(surface, (100, 100, 100), menu_rect, 2)
@@ -349,14 +349,14 @@ class DebugMenu:
         title_surf = self.font.render(title_text, True, (255, 255, 0))
         surface.blit(title_surf, (self.menu_x + 5, self.menu_y + 5))
 
-        # Opciones del menú
+        # Opciones del menu
         current_options = self.menu_options[self.current_category]
         y_offset = 30
         
         for i, (text, _) in enumerate(current_options):
             color = (255, 255, 255)
             if i == self.selected_index:
-                # Highlight para opción seleccionada
+                # Highlight para opcion seleccionada
                 highlight_rect = pygame.Rect(
                     self.menu_x + 2, 
                     self.menu_y + y_offset - 2, 
@@ -380,13 +380,13 @@ class DebugMenu:
         if not self.visible:
             return
 
-        # Dibujar hitboxes de colisión
+        # Dibujar hitboxes de colision
         if self.show_hitboxes and hasattr(self.game_scene, 'collision'):
             for sprite in self.game_scene.collision:
                 screen_rect = sprite.rect.move(camera_offset)
                 pygame.draw.rect(surface, (255, 0, 0), screen_rect, 1)
 
-        # Dibujar zonas de interacción
+        # Dibujar zonas de interaccion
         if self.show_interaction_zones and hasattr(self.game_scene, 'interactable_group'):
             for zone in self.game_scene.interactable_group:
                 screen_rect = zone.rect.move(camera_offset)
@@ -397,7 +397,7 @@ class DebugMenu:
                     text_surf = pygame.font.Font(None, 12).render(zone.text[:20], True, (0, 255, 0))
                     surface.blit(text_surf, (screen_rect.x, screen_rect.y - 15))
 
-        # Información de FPS y posición del jugador
+        # Informacion de FPS y posicion del jugador
         if hasattr(self.game_scene, 'player'):
             player_pos = self.game_scene.player.pos
             pos_text = f"Pos: ({int(player_pos.x)}, {int(player_pos.y)})"

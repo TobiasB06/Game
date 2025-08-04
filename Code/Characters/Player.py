@@ -1,4 +1,4 @@
-# Player.py - Versión mejorada con mejor tracking de estado
+# Player.py - Version mejorada con mejor tracking de estado
 
 from Settings.Settings import *
 from ResourceManager import ResourceManager
@@ -65,7 +65,7 @@ class Player(pygame.sprite.Sprite):
             offset.x = +half
             w, h = 10, 2
 
-        # 2) Punto de interacción
+        # 2) Punto de interaccion
         interaction_pos = self.hitbox_rect.center + offset
 
         return pygame.Rect(
@@ -135,7 +135,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction.length_squared() > 0:
             self.direction = self.direction.normalize()
             
-        # NUEVO: Detectar cambio de dirección
+        # NUEVO: Detectar cambio de direccion
         self.movement_changed = (old_direction - self.direction).length_squared() > 0.1
             
     def skip_dialogue(self):
@@ -147,8 +147,8 @@ class Player(pygame.sprite.Sprite):
             self.dialog_manager.current_index = 0
             
     def move(self, dt):
-        """Movimiento con actualización correcta de rectángulos"""
-        # Guardar posición anterior
+        """Movimiento con actualizacion correcta de rectángulos"""
+        # Guardar posicion anterior
         self.last_pos = self.pos.copy()
         
         # Movimiento horizontal
@@ -161,14 +161,14 @@ class Player(pygame.sprite.Sprite):
         self.hitbox_rect.bottom = round(self.pos.y + 18)  # NUEVO: Redondear
         self.collision("vertical")
 
-        # Actualiza la posición del rect del sprite con coordenadas enteras
+        # Actualiza la posicion del rect del sprite con coordenadas enteras
         self.rect.midbottom = self.hitbox_rect.midbottom
         
         # Sincronizar pos con hitbox_rect para mantener consistencia
         self.pos.x = self.hitbox_rect.centerx
         self.pos.y = self.hitbox_rect.bottom - 18
         
-        # Calcular si realmente se movió
+        # Calcular si realmente se movio
         movement_distance = (self.pos - self.last_pos).length()
         self.is_actually_moving = movement_distance > 0.1
 

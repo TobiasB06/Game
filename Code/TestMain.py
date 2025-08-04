@@ -3,7 +3,7 @@ import pygame
 import sys
 from pathlib import Path
 
-# Configuración básica
+# Configuracion básica
 pygame.init()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
@@ -16,7 +16,7 @@ class TestFollower(pygame.sprite.Sprite):
         self.image = pygame.Surface((25, 44))
         self.image.fill(color)
         
-        # Posición precisa usando Vector2
+        # Posicion precisa usando Vector2
         self.pos = pygame.Vector2(start_pos)
         self.rect = self.image.get_rect(center=start_pos)
         
@@ -50,7 +50,7 @@ class TestPlayer(pygame.sprite.Sprite):
         self.image = pygame.Surface((25, 44))
         self.image.fill((100, 150, 255))  # Azul para el player
         
-        # Posición precisa usando Vector2
+        # Posicion precisa usando Vector2
         self.pos = pygame.Vector2(start_pos)
         self.rect = self.image.get_rect(center=start_pos)
         
@@ -95,11 +95,11 @@ class TestAllSprites(pygame.sprite.Group):
         
         # Renderizar cada sprite
         for sprite in self:
-            # MÉTODO 1: Original (con posible problema)
+            # MeTODO 1: Original (con posible problema)
             # render_pos = sprite.rect.topleft + self.camera_offset
             # surface.blit(sprite.image, render_pos)
             
-            # MÉTODO 2: Usando posición precisa si existe
+            # MeTODO 2: Usando posicion precisa si existe
             if hasattr(sprite, 'pos'):
                 render_x = sprite.pos.x - sprite.image.get_width() // 2 + self.camera_offset.x
                 render_y = sprite.pos.y - sprite.image.get_height() // 2 + self.camera_offset.y
@@ -149,13 +149,13 @@ class TestGame:
             # Update
             self.player.update(dt)
             
-            # Guardar posición del player en historial
+            # Guardar posicion del player en historial
             self.player_history.append(self.player.pos.copy())
             if len(self.player_history) > 60:  # ~1 segundo de historial
                 self.player_history.pop(0)
             
-            # Hacer que el follower siga una posición pasada
-            if len(self.player_history) >= 30:  # Seguir posición de hace ~0.5 segundos
+            # Hacer que el follower siga una posicion pasada
+            if len(self.player_history) >= 30:  # Seguir posicion de hace ~0.5 segundos
                 target_pos = self.player_history[-30]
                 self.follower.follow_target(target_pos, dt)
 

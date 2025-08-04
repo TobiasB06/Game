@@ -65,7 +65,7 @@ class DialogBox:
                 current = w + " "
         lines.append(current)
 
-        # 4) Ajusta altura del box según líneas
+        # 4) Ajusta altura del box segun líneas
         line_h = self.font.get_height()
         needed_h = len(lines) * line_h + self.padding * 2
         self.box_rect.height = max(self.min_height, needed_h)
@@ -152,7 +152,7 @@ class DialogManager:
         if self.active and self.dialog_box:
             self.dialog_box.update()
             if self.dialog_box.is_finished():
-                # Podés decidir si automáticamente pasa al siguiente texto o esperar input
+                # Podes decidir si automáticamente pasa al siguiente texto o esperar input
                 pass
 
     def draw(self, surface):

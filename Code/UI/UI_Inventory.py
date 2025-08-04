@@ -17,7 +17,7 @@ class UI_Inventory:
     def __init__(self, rect: pygame.Rect, font: pygame.font.Font, characters_list: List[Character], character_sprites=None):
         self.rect = rect
         self.font = font
-        self.party = characters_list if characters_list else []  # Protección contra None
+        self.party = characters_list if characters_list else []  # Proteccion contra None
         self.visible = False
         
         # Validar que tenemos al menos un personaje
@@ -26,7 +26,7 @@ class UI_Inventory:
         
         self.inventory_model = InventoryModel(self.party)
         
-        # Estados de navegación con validación
+        # Estados de navegacion con validacion
         self.current_state = MenuState.CHARACTER_SELECT
         self.selected_character = 0
         self.selected_equipment = 0
@@ -36,21 +36,21 @@ class UI_Inventory:
         # Sprites de personajes (opcional)
         self.character_sprites = character_sprites or {}
         
-        # Información de personajes con sus nombres reales
+        # Informacion de personajes con sus nombres reales
         self.character_definitions = [
             {"name": "ELY", "sprite_key": "ely"},
             {"name": "KORAL", "sprite_key": "koral"},
             {"name": "VEL", "sprite_key": "vel"},
         ]
         
-        # Configuración de áreas
+        # Configuracion de áreas
         self.setup_areas()
         
         # Validar índices iniciales
         self._validate_selections()
         
     def setup_areas(self):
-        """Define las áreas de cada sección del inventario"""
+        """Define las áreas de cada seccion del inventario"""
         # Área de personajes (izquierda superior) - 3 columnas
         self.char_area = pygame.Rect(
             self.rect.x + 2,
@@ -79,7 +79,7 @@ class UI_Inventory:
             122, 80
         )
         
-        # Área de selección/inventario (derecha inferior)
+        # Área de seleccion/inventario (derecha inferior)
         self.selection_area = pygame.Rect(
             self.equipment_area.x,
             self.equipment_area.bottom,
@@ -87,7 +87,7 @@ class UI_Inventory:
         )
 
     def _validate_selections(self):
-        """Valida y corrige los índices de selección"""
+        """Valida y corrige los índices de seleccion"""
         # Validar personaje seleccionado
         if self.party:
             self.selected_character = max(0, min(self.selected_character, len(self.party) - 1))
@@ -112,7 +112,7 @@ class UI_Inventory:
                 self.selected_inventory_item = 0
 
     def get_current_character(self) -> Optional[Character]:
-        """Obtiene el personaje actualmente seleccionado con validación"""
+        """Obtiene el personaje actualmente seleccionado con validacion"""
         if not self.party:
             logger.warning("Attempted to get current character from empty party")
             return None
@@ -124,7 +124,7 @@ class UI_Inventory:
         return None
     
     def get_character_info(self, index: int) -> Dict[str, str]:
-        """Obtiene la información del personaje por índice con validación"""
+        """Obtiene la informacion del personaje por índice con validacion"""
         if 0 <= index < len(self.character_definitions):
             return self.character_definitions[index]
         return {"name": f"CHAR{index+1}", "sprite_key": f"char{index+1}"}
@@ -140,7 +140,7 @@ class UI_Inventory:
             logger.debug("Inventory UI closed")
 
     def handle_input(self, event):
-        """Maneja input con validación de estado"""
+        """Maneja input con validacion de estado"""
         if not self.visible:
             return
             
@@ -164,7 +164,7 @@ class UI_Inventory:
                 self._handle_inventory_input(event)
 
     def _handle_character_input(self, event):
-        """Maneja input en modo selección de personaje"""
+        """Maneja input en modo seleccion de personaje"""
         if not self.party:
             return
             
@@ -222,7 +222,7 @@ class UI_Inventory:
             self.selected_skill = (self.selected_skill + 1) % max_skills
 
     def _handle_inventory_input(self, event):
-        """Maneja input en modo selección de inventario"""
+        """Maneja input en modo seleccion de inventario"""
         current_char = self.get_current_character()
         if not current_char:
             self.current_state = MenuState.EQUIPMENT
@@ -245,13 +245,13 @@ class UI_Inventory:
             try:
                 self.inventory_model.equip_selected_item()
                 logger.debug(f"Item equipped successfully")
-                # Opcional: volver al menú de equipamiento
+                # Opcional: volver al menu de equipamiento
                 self.current_state = MenuState.EQUIPMENT
             except Exception as e:
                 logger.error(f"Error equipping item: {e}")
             return
 
-        # Navegación por la lista
+        # Navegacion por la lista
         if event.key == pygame.K_UP:
             self.selected_inventory_item = (self.selected_inventory_item - 1) % len(available_items)
         elif event.key == pygame.K_DOWN:
@@ -284,7 +284,7 @@ class UI_Inventory:
             surface.blit(error_surf, (self.rect.x + 10, self.rect.y + 30))
 
     def _draw_characters(self, surface):
-        """Dibuja la sección de personajes con validación"""
+        """Dibuja la seccion de personajes con validacion"""
         pygame.draw.rect(surface, (0, 0, 0), self.char_area)
         pygame.draw.rect(surface, (255, 255, 255), self.char_area, 1)
 
@@ -293,7 +293,7 @@ class UI_Inventory:
             surface.blit(no_chars_surf, (self.char_area.x + 5, self.char_area.y + 35))
             return
 
-        col_width = max(1, self.char_area.width // 3)  # Evitar división por 0
+        col_width = max(1, self.char_area.width // 3)  # Evitar division por 0
 
         for i, character in enumerate(self.party):
             if i >= 3:  # Solo mostrar máximo 3 personajes
@@ -339,7 +339,7 @@ class UI_Inventory:
             name_x = x + max(0, (col_width - name_surf.get_width()) // 2)
             surface.blit(name_surf, (name_x, self.char_area.y + 5))
 
-            # Barra de vida con validación
+            # Barra de vida con validacion
             try:
                 max_hp = character.get_max_hp()
                 current_hp = max(0, character.current_hp)  # Evitar valores negativos
@@ -359,7 +359,7 @@ class UI_Inventory:
                 logger.warning(f"Error drawing HP bar for character {i}: {e}")
 
     def _draw_stats(self, surface):
-        """Dibuja la sección de estadísticas con validación"""
+        """Dibuja la seccion de estadísticas con validacion"""
         pygame.draw.rect(surface, (0, 0, 0), self.stats_area)
         pygame.draw.rect(surface, (255, 255, 255), self.stats_area, 1)
         
@@ -390,7 +390,7 @@ class UI_Inventory:
             surface.blit(error_surf, (self.stats_area.x + 2, self.stats_area.y + 15))
 
     def _draw_skills(self, surface):
-        """Dibuja la sección de habilidades"""
+        """Dibuja la seccion de habilidades"""
         pygame.draw.rect(surface, (0, 0, 0), self.skills_area)
         pygame.draw.rect(surface, (255, 255, 255), self.skills_area, 1)
         
@@ -405,7 +405,7 @@ class UI_Inventory:
             surface.blit(skill_surf, (self.skills_area.x + 2, y))
 
     def _draw_equipment(self, surface):
-        """Dibuja la sección de equipamiento con validación"""
+        """Dibuja la seccion de equipamiento con validacion"""
         pygame.draw.rect(surface, (0, 0, 0), self.equipment_area)
         pygame.draw.rect(surface, (255, 255, 255), self.equipment_area, 1)
         
@@ -448,7 +448,7 @@ class UI_Inventory:
             surface.blit(error_surf, (self.equipment_area.x + 2, self.equipment_area.y + 35))
 
     def _draw_selection_area(self, surface):
-        """Dibuja el área de selección con validación"""
+        """Dibuja el área de seleccion con validacion"""
         pygame.draw.rect(surface, (0, 0, 0), self.selection_area)
         pygame.draw.rect(surface, (255, 255, 255), self.selection_area, 1)
 

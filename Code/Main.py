@@ -3,13 +3,9 @@ import pygame
 import logging
 from pathlib import Path
 from os.path import join
-from collections import deque
-
-# Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Importaciones directas (eliminamos Imports.py)
 from Settings.Settings import *
 from ResourceManager import ResourceManager
 from GameSystems import GameStateManager, RenderSystem, PartyManager, WorldManager, GameState
@@ -21,11 +17,10 @@ from UI.UI_Inventory import UI_Inventory
 from DebugMenu import DebugMenu
 from Game.World.Map import FadeTransition
 
-# Centrar ventana
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 
 class Scene:
-    """Clase base para escenas del juego"""
+    #clase base 
     def __init__(self, game):
         self.game = game
     
@@ -39,17 +34,13 @@ class Scene:
         pass
     
     def cleanup(self):
-        """Limpia recursos de la escena"""
         pass
 
 class MenuScene(Scene):
-    """Escena del menú principal"""
-    
+
     def __init__(self, game, font):
         super().__init__(game)
         self.resource_manager = ResourceManager.get_instance()
-        
-        # Inicializar menús
         self.menus = {
             "main": Menu(game.internal_surf, font, [
                 ("Empezar", lambda: self.game.change_scene("juego")),
@@ -67,16 +58,14 @@ class MenuScene(Scene):
                 ("Volver", lambda: self.change_menu("settings")),
             ]),
             "video": Menu(game.internal_surf, font, [
-                ("Resolución", self.game.toggle_resolution),
+                ("Resolucion", self.game.toggle_resolution),
                 ("Fullscreen", self.game.toggle_fullscreen),
                 ("Volver", lambda: self.change_menu("settings")),
             ]),
         }
-        
         self.current_menu = "main"
 
     def change_menu(self, name):
-        """Cambia el menú actual"""
         if name in self.menus:
             self.current_menu = name
             self.menus[name].selected_index = 0
@@ -95,8 +84,7 @@ class MenuScene(Scene):
         self.menus[self.current_menu].draw()
 
 class GameScene(Scene):
-    """Escena principal del juego refactorizada"""
-    
+
     def __init__(self, game):
         super().__init__(game)
         logger.info("Initializing GameScene")
@@ -156,16 +144,13 @@ class GameScene(Scene):
             sound=default_sound,
             portrait=portrait
         )
-        
-        # Verificar que el sprite sheet existe antes de crear el jugador
-        sprite_sheet_key = "Ely"  # El ResourceManager usa "Ely" con mayúscula
+        sprite_sheet_key = "Ely"
         sprite_sheet = self.resource_manager.get_spritesheet(sprite_sheet_key)
 
         if not sprite_sheet:
             logger.warning(f"Sprite sheet '{sprite_sheet_key}' not found, creating placeholder")
-            # Crear un placeholder sprite sheet
             placeholder_surface = pygame.Surface((25, 44))
-            placeholder_surface.fill((100, 150, 255))  # Color azul para Ely
+            placeholder_surface.fill((100, 150, 255)) 
             from ResourceManager import SpriteSheet
             sprite_sheet = SpriteSheet(placeholder_surface, 25, 44)
             self.resource_manager._sprite_sheets[sprite_sheet_key] = sprite_sheet
@@ -183,9 +168,8 @@ class GameScene(Scene):
         self.followers = []
         self._create_followers()
         logger.debug("World initialized")
-    # NUEVO MÉTODO en GameScene:
+
     def _create_followers(self):
-            """Crea followers para todos los personajes excepto el primero (player)"""
             # Limpiar followers existentes
             for follower in self.followers:
                 follower.kill()  # Remover del grupo de sprites
@@ -195,7 +179,7 @@ class GameScene(Scene):
             for character in self.party_manager.characters[1:]:
                 follower = Follower(character, self, self.world_manager.all_sprites)
                 
-                # Posicionar follower en la posición del jugador inicialmente
+                # Posicionar follower en la posicion del jugador inicialmente
                 if hasattr(self, 'player') and self.player:
                     follower.teleport_to(self.player.rect.center)
                 
@@ -204,7 +188,6 @@ class GameScene(Scene):
             logger.debug(f"Created {len(self.followers)} followers")
             
     def _init_ui(self):
-        """Inicializa la interfaz de usuario"""
         try:
             # UI del inventario
             inventory_rect = pygame.Rect(
@@ -219,10 +202,8 @@ class GameScene(Scene):
                 self.game.font, 
                 self.party_manager.characters
             )
-            
-            # Menú de debug
+    
             self.debug_menu = DebugMenu(self.game.font_12, self)
-            
             logger.debug("UI initialized")
         
         except Exception as e:
@@ -250,7 +231,7 @@ class GameScene(Scene):
         return removed
     
     def go_next_level(self, path: str):
-        """Inicia transición a un nuevo nivel"""
+        """Inicia transicion a un nuevo nivel"""
         logger.info(f"Starting transition to {path}")
         self.state_manager.set_state(GameState.TRANSITIONING)
         self.world_manager.start_transition(path, self._finish_level_change)
@@ -271,7 +252,7 @@ class GameScene(Scene):
             self.player_path.clear()
             self.player_path.append(self.player.rect.center)
             
-            # Reposicionar todos los followers en la nueva posición del jugador
+            # Reposicionar todos los followers en la nueva posicion del jugador
             for follower in self.followers:
                 follower.teleport_to(self.player.rect.center)
                 # Re-añadir al grupo de sprites del nuevo mapa
@@ -346,20 +327,18 @@ class GameScene(Scene):
     
 
     def update(self, dt):
-        """Actualización simplificada con historial completo del jugador"""
         
-        # 1) Debug y transiciones
+        # Debug y transiciones
         self.debug_menu.update(dt)
         self.world_manager.update(dt)
 
-        # 2) Movimiento del jugador
+        #Movimiento del jugador
         if self.state_manager.can_move_player():
             self.player.move(dt)      
             self.player.animate(dt)
 
-        # 3) NUEVO: Guardar estado completo del jugador en el historial
+        # Guardar estado completo del jugador en el historial
         if self.state_manager.can_move_player():
-            # Por defecto, tomamos datos actuales
             pos_to_store = self.player.rect.center
             dir_to_store = self.player.direction
             frame_to_store = self.player.frame_index
@@ -380,7 +359,7 @@ class GameScene(Scene):
             if len(self.player_history) > 500:
                 self.player_history.pop(0)
 
-        # 4) NUEVO: Actualizar followers con datos exactos del historial
+        # Actualizar followers con datos exactos del historial
         if self.followers and len(self.player_history) > 10:
             for idx, follower in enumerate(self.followers, start=1):
                 hist_idx = len(self.player_history) - 10 * (idx + 1)
@@ -389,7 +368,7 @@ class GameScene(Scene):
                     follower.follow_player_exact(past_player_data, dt)
 
 
-        # 5) Resto del código igual...
+        # 5) Resto del codigo igual...
         self.dialog_manager.update()
         
         if not self.dialog_manager.active \
@@ -444,16 +423,15 @@ class GameScene(Scene):
     def cleanup(self):
         """Limpia recursos de la escena"""
         logger.info("Cleaning up GameScene")
-        try:
-            # Limpiar sistemas si es necesario
-            if hasattr(self, 'world_manager'):
-                del self.world_manager
-            if hasattr(self, 'party_manager'):
-                del self.party_manager
-            if hasattr(self, 'player'):
-                del self.player
-        except Exception as e:
-            logger.error(f"Error during GameScene cleanup: {e}")
+   
+        # Limpiar sistemas si es necesario
+        if hasattr(self, 'world_manager'):
+            del self.world_manager
+        if hasattr(self, 'party_manager'):
+            del self.party_manager
+        if hasattr(self, 'player'):
+            del self.player
+
 
 class Game:
     """Clase principal del juego"""
@@ -560,7 +538,7 @@ class Game:
             
         except Exception as e:
             logger.error(f"Error changing scene to {name}: {e}")
-            # Fallback al menú principal
+            # Fallback al menu principal
             self.scene = MenuScene(self, self.font)
     
     def toggle_fullscreen(self):
@@ -578,9 +556,9 @@ class Game:
         except Exception as e:
             logger.error(f"Error toggling fullscreen: {e}")
     
-    # Funciones de configuración (placeholder para implementación futura)
+    # Funciones de configuracion (placeholder para implementacion futura)
     def toggle_resolution(self):
-        """Cambia la resolución interna"""
+        """Cambia la resolucion interna"""
         logger.info("Resolution toggle - not implemented yet")
     
     def increase_volume(self):

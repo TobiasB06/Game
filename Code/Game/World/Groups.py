@@ -22,10 +22,10 @@ class AllSprites(pygame.sprite.Group):
         self.target_offset.y = target_y
         
         if self.camera_smooth:
-            # Interpolación suave de cámara (opcional)
+            # Interpolacion suave de cámara (opcional)
             self.offset.x += (self.target_offset.x - self.offset.x) * self.smooth_factor
             self.offset.y += (self.target_offset.y - self.offset.y) * self.smooth_factor
-            # Redondear después de la interpolación
+            # Redondear despues de la interpolacion
             final_offset = (round(self.offset.x), round(self.offset.y))
         else:
             # Sin suavizado - usar directamente los valores redondeados
@@ -55,5 +55,5 @@ class AllSprites(pygame.sprite.Group):
             self.offset = self.target_offset.copy()
 
     def get_camera_offset(self):
-        """Obtiene el offset actual de la cámara (útil para debug)"""
+        """Obtiene el offset actual de la cámara (util para debug)"""
         return (int(self.offset.x), int(self.offset.y))

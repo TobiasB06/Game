@@ -41,7 +41,7 @@ class Follower(pygame.sprite.Sprite):
         super().__init__(*groups)
         self.char = character
         self.game_scene = game_scene
-        # Cargar animación
+        # Cargar animacion
         sheet = game_scene.resource_manager.get_spritesheet(self.char.sprite_key)
         if sheet:
             self.frames = {
@@ -61,7 +61,7 @@ class Follower(pygame.sprite.Sprite):
             self.current_state = "down"
             self.frame_index = 0
 
-        # Posición inicial
+        # Posicion inicial
         if hasattr(game_scene, 'player') and game_scene.player:
             start_pos = game_scene.player.rect.center
         else:
@@ -91,7 +91,7 @@ class Follower(pygame.sprite.Sprite):
 
             self.rect.center = self.pos.xy
 
-        # Animación
+        # Animacion
         self.current_state = player_data['state']
         raw = int(player_data['frame_index'])
         self.frame_index = raw % len(self.frames[self.current_state])
@@ -103,12 +103,12 @@ class Follower(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(position)
         self.rect.center = (self.pos.x, self.pos.y)
         
-        # Reset animación
+        # Reset animacion
         if self.frames:
             self.current_state = "down"
             self.frame_index = 0
             self.image = self.frames[self.current_state][0]
 
     def update(self, dt):
-        """Método update estándar - no hacer nada aquí"""
-        pass# Player.py - Versión mejorada con mejor tracking de estado
+        """Metodo update estándar - no hacer nada aquí"""
+        pass# Player.py - Version mejorada con mejor tracking de estado
